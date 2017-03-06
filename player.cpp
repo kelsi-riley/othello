@@ -65,6 +65,8 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 			{
 				validmoves.push_back(m);
 			}
+			else
+				delete m;
 		}
 	}
 	Move *nextmove;
@@ -90,19 +92,22 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 	return nextmove;
 }
 
-int Player::minimax(Move *move)
+int Player::minimax(Move *move, int depth)
 {
-	Board *boardclone = board -> copy();
-	boardclone -> doMove(move, playerside);
+	Board *oldboard = board -> copy();
+	//Board *boardclone = board -> copy();
+	board -> doMove(move, playerside);
 	std::vector<Move *> validopponentmoves;
 	int i;
 	int worst = 65;
+	if (depth != 0)
+	{
 	for (i = 0; i < 8; i++)
 	{
 		for (int j = 0; j < 8 ; j++)
 		{
 			Move *m = new Move(i, j);
-			if( boardclone->checkMove(m, otherside))
+			if(board->checkMove(m, otherside))
 			{
 				validopponentmoves.push_back(m);
 			}
@@ -114,8 +119,8 @@ int Player::minimax(Move *move)
 	{
 		for (unsigned int i = 0; i < validopponentmoves.size(); i++)
 		{
-			Board *boardcopy = boardclone->copy();
-			boardcopy->doMove(validopponentmoves[i], otherside);
+			//Board *boardcopy = board->copy();
+			doMove(validopponentmoves[i], 9999999);
 			int ours = boardcopy->count(playerside);
 			int theirs = boardcopy->count(otherside);
 			if (ours-theirs < worst)
@@ -135,8 +140,10 @@ int Player::minimax(Move *move)
 		{
 		   worst = ours-theirs;	
 		}
+		delete boardcopy;
 	}
-	for (unsigned int i; i < validopponentmoves.size(); i++)
-		delete validopponentmoves[i];
+	}
+	board = oldboard;
+	delete oldboard;
 	return worst;	
 }
