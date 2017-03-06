@@ -10,11 +10,6 @@ Player::Player(Side side) {
     // Will be set to true in test_minimax.cpp.
     testingMinimax = false;
 
-    /*
-     * TODO: Do any initialization you need to do here (setting up the board,
-     * precalculating things, etc.) However, remember that you will only have
-     * 30 seconds.
-     */
      this -> board = new Board();
      this -> playerside = side;
      if (side == WHITE)
@@ -96,9 +91,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 }
 
 
-// I decided to make this helper function... It makes the code cleaner but
-// I'm 100% sure this is not efficent. This probably isn't a problem for this
-// week but we should keep it in mind for next week
+// Weights possible moves based on board position
 int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 {
 	Board *theboardcopy = theboard->copy();
@@ -210,10 +203,7 @@ int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 	return temp;
 }	
 
-// sorry for all of the commented out code in this one... I'm the worst
-// that would be for if we wanted to implement another layer of minimax
-// but then I realized that can wait... I didnt want to just delete it
-// all though so here we are.. D: 
+// Much of the commented code is for multiple layers of minimax, unimplemented
 int Player::minimax(Move *move)
 {
 	Board *boardclone = board -> copy();
