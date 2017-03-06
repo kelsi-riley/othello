@@ -92,6 +92,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 	return nextmove;
 }
 
+
 int Player::minimax(Move *move)
 {
 	Board *boardclone = board -> copy();
