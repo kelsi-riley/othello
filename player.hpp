@@ -7,7 +7,10 @@
 using namespace std;
 
 class Player {
-
+private:
+	Side playerside;
+	Side otherside;
+	Board *board;
 public:
     Player(Side side);
     ~Player();
@@ -16,6 +19,7 @@ public:
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
+    int minimax(Move *move);
 };
 
 #endif
