@@ -128,10 +128,16 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 	return nextmove;
 }
 
+// sorry for all of the commented out code in this one... I'm the worst
+// that would be for if we wanted to implement another layer of minimax
+// but then I realized that can wait... I didnt want to just delete it
+// all though so here we are.. D: 
 int Player::minimax(Move *move)
 {
 	Board *boardclone = board -> copy();
 	boardclone -> doMove(move, playerside);
+	// builds a vector of all valid moves our opponent can make after
+	// we make our move "move"
 	std::vector<Move *> validopponentmoves;
 	int i;
 	int worst = 65;
@@ -148,31 +154,156 @@ int Player::minimax(Move *move)
 			delete m;
 		}
 	} 	
+	// if our opponent has any valid moves, then we find the most unfavorable
+	// possible outcome
 	if (validopponentmoves.size() != 0)
 	{
 		for (unsigned int i = 0; i < validopponentmoves.size(); i++)
 		{
 			Board *boardcopy = boardclone->copy();
+			boardcopy->doMove(validopponentmoves[i], otherside);
 			int ours = boardcopy->count(playerside);
 			int theirs = boardcopy->count(otherside);
-			if (ours-theirs < worst)
+			int temp = ours-theirs;
+			if (temp < worst)
 			{
-			   worst = ours-theirs;	
+				worst = temp;
 			}
+			//std::vector<Move *> validmoves;
+			//for (int k = 0; k < 8; k++)
+			//{
+				//for (int j = 0; j < 8 ; j++)
+				//{
+					//Move *m = new Move(k, j);
+					//if(boardcopy->checkMove(m, playerside))
+					//{
+						//validmoves.push_back(m);
+					//}
+					//else
+					//delete m;
+				//}
+			//}
+			//for (unsigned int k = 0; k <validmoves.size(); k++)
+			//{
+				//Board *boardcopytwo = boardcopy->copy();
+				//boardcopytwo->doMove(validmoves[k], playerside);
+				//int ours = boardcopytwo->count(playerside);
+				//int theirs = boardcopytwo->count(otherside);
+				//int temp = ours-theirs;
+				//if (validmoves[k]->getX() == 0)
+				//{
+					//if (validmoves[k]->getY()==0||validmoves[k]->getY()==7)
+					//{
+						//temp *= 3;
+					//}
+					//else if (validmoves[k]->getY()==1||validmoves[k]->getY()==6)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//else if (validmoves[k]->getX() == 7)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= 3;
+					//}
+					//else if (validmoves[k]->getY()==1 || validmoves[k]->getY()==6)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//else if (validmoves[k]->getX() == 1)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= (-3);
+					//}	
+				//}
+				//else if (validmoves[k]->getX() == 6)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//if (temp < worst)
+				//{
+					//worst = temp;	
+				//}
+				//delete boardcopytwo;
+			//}
 			delete boardcopy;
 		}
 	}
 	else
 	{
-		Board *boardcopy = board->copy();
-		boardcopy->doMove(move, playerside);	
-		int ours = boardcopy->count(playerside);
-		int theirs = boardcopy->count(otherside);
-		if (ours-theirs < worst)
-		{
-		   worst = ours-theirs;	
-		}
-		delete boardcopy;
+		int ours = boardclone->count(playerside);
+		int theirs = boardclone->count(otherside);
+		worst = ours-theirs;
+				//int temp = ours-theirs;
+			//std::vector<Move *> validmoves;
+			//for (int k = 0; k < 8; k++)
+			//{
+				//for (int j = 0; j < 8 ; j++)
+				//{
+					//Move *m = new Move(k, j);
+					//if(boardclone->checkMove(m, playerside))
+					//{
+						//validmoves.push_back(m);
+					//}
+					//else
+					//delete m;
+				//}
+			//}
+			//for (unsigned int k = 0; k <validmoves.size(); k++)
+			//{
+				//Board *boardcopy = board->copy();
+				//boardcopy->doMove(validmoves[k], playerside);
+				//int ours = boardcopy->count(playerside);
+				//int theirs = boardcopy->count(otherside);
+				//int temp = ours-theirs;
+				//if (validmoves[k]->getX() == 0)
+				//{
+					//if (validmoves[k]->getY()==0||validmoves[k]->getY()==7)
+					//{
+						//temp *= 3;
+					//}
+					//else if (validmoves[k]->getY()==1||validmoves[k]->getY()==6)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//else if (validmoves[k]->getX() == 7)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= 3;
+					//}
+					//else if (validmoves[k]->getY()==1 || validmoves[k]->getY()==6)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//else if (validmoves[k]->getX() == 1)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= (-3);
+					//}	
+				//}
+				//else if (validmoves[k]->getX() == 6)
+				//{
+					//if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
+					//{
+						//temp *= (-3);
+					//}
+				//}
+				//if (temp < worst)
+				//{
+					//worst = temp;	
+				//}
+				//delete boardcopy;
+			//}
 	}
 	delete boardclone;
 	return worst;	
