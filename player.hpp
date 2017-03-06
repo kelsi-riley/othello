@@ -4,6 +4,7 @@
 #include <iostream>
 #include "common.hpp"
 #include "board.hpp"
+#include <vector>
 using namespace std;
 
 class Player {
@@ -20,6 +21,8 @@ public:
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
     int minimax(Move *move);
+    int heiuristic(Board *theboard, std::vector<Move *> moves, Side side);
+    void setBoard(Board *boardset);
 };
 
 #endif
