@@ -15,15 +15,15 @@ Player::Player(Side side) {
      * precalculating things, etc.) However, remember that you will only have
      * 30 seconds.
      */
-     Board *board = new Board();
-     Side playerside = side;
+     this->board = new Board();
+     this->playerside = side;
      if (side == WHITE)
      {
-		 Side otherside = BLACK;
+		 this->otherside = BLACK;
 	 }
 	 else
 	 {
-		 Side otherside = WHITE;
+		 this->otherside = WHITE;
 	 }
 }
 
@@ -68,7 +68,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 		}
 	}
 	Move *nextmove;
-	int currentminimax;
+	int currentminimax = -65;
 	int temp; 	
 	if (validmoves.size() ==0)
 	{
@@ -86,11 +86,14 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 			}
 		}
 	}
+	board->doMove(nextmove, playerside);
 	return nextmove;
 }
 
 int Player::minimax(Move *move)
 {
+	Board *boardcpy = board->copy();
+	boardcpy->doMove(move,playerside);
 	std::vector<Move *> validopponentmoves;
 	int i;
 	int worst = 65;
@@ -99,9 +102,13 @@ int Player::minimax(Move *move)
 		for (int j = 0; j < 8 ; j++)
 		{
 			Move *m = new Move(i, j);
-			if( board->checkMove(m, otherside))
+			if( boardcpy->checkMove(m, otherside))
 			{
 				validopponentmoves.push_back(m);
+			}
+			else
+			{
+				delete m;
 			}
 		}
 	} 	
@@ -118,6 +125,7 @@ int Player::minimax(Move *move)
 			{
 			   worst = ours-theirs;	
 			}
+			delete boardcopy;
 		}
 	}
 	else
