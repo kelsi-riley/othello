@@ -96,11 +96,10 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 }
 
 
-=======
 // I decided to make this helper function... It makes the code cleaner but
 // I'm 100% sure this is not efficent. This probably isn't a problem for this
 // week but we should keep it in mind for next week
-int Player::heiuristic(Board *theboard, std::vector<Move*> moves, Side side)
+int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 {
 	Board *theboardcopy = theboard->copy();
 	bool corner = false;
@@ -248,7 +247,7 @@ int Player::minimax(Move *move)
 		for (unsigned int i = 0; i < validopponentmoves.size(); i++)
 		{
 			ourmoves[1] = validopponentmoves[i];
-			int temp = heiuristic(board, ourmoves, playerside);
+			int temp = heuristic(board, ourmoves, playerside);
 			if (temp < worst)
 			{
 				worst = temp;
@@ -331,7 +330,7 @@ int Player::minimax(Move *move)
 	{
 		std::vector<Move*> ourmove;
 		ourmove.push_back(move);
-		int temp = heiuristic(board, ourmove, playerside);
+		int temp = heuristic(board, ourmove, playerside);
 		return temp;
 		//int ours = boardclone->count(playerside);
 		//int theirs = boardclone->count(otherside);
