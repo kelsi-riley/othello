@@ -66,11 +66,11 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 				validmoves.push_back(m);
 			}
 			else
-				delete m;
+			delete m;
 		}
 	}
 	Move *nextmove;
-	int currentminimax = -65;
+	int currentminimax = (-65)*3;
 	int temp; 	
 	if (validmoves.size() ==0)
 	{
@@ -81,6 +81,42 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 		for (unsigned int i = 0; i < validmoves.size(); i++)
 		{
 			temp = minimax(validmoves[i]);
+			if (validmoves[i]->getX() == 0)
+			{
+				if (validmoves[i]->getY()==0||validmoves[i]->getY()==7)
+				{
+					temp *= 3;
+				}
+				else if (validmoves[i]->getY()==1||validmoves[i]->getY()==6)
+				{
+					temp *= (-3);
+				}
+			}
+			else if (validmoves[i]->getX() == 7)
+			{
+				if (validmoves[i]->getY()==0 || validmoves[i]->getY()==7)
+				{
+					temp *= 3;
+				}
+				else if (validmoves[i]->getY()==1 || validmoves[i]->getY()==6)
+				{
+					temp *= (-3);
+				}
+			}
+			else if (validmoves[i]->getX() == 1)
+			{
+				if (validmoves[i]->getY()==0 || validmoves[i]->getY()==7)
+				{
+					temp *= (-3);
+				}
+			}
+			else if (validmoves[i]->getX() == 6)
+			{
+				if (validmoves[i]->getY()==0 || validmoves[i]->getY()==7)
+				{
+					temp *= (-3);
+				}
+			}
 			if (temp > currentminimax)
 			{
 				currentminimax = temp;
@@ -109,7 +145,7 @@ int Player::minimax(Move *move)
 				validopponentmoves.push_back(m);
 			}
 			else
-				delete m;
+			delete m;
 		}
 	} 	
 	if (validopponentmoves.size() != 0)
