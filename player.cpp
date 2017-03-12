@@ -203,6 +203,50 @@ int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 	return temp;
 }	
 
+
+//I started writing the skeleton code of this function, it doesn't work yet
+int Player::alphabeta(move *move, Side side, int depth, int a, int b)
+{
+	int v = 0;
+	std::vector<Move *> validmoves;
+	if (depth == 0)
+		return heuristic(move);
+	if (side == playerside)
+	{
+		v = -3 * 65;
+		for (i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8 ; j++)
+			{
+				Move *m = new Move(i, j);
+				if(boardclone->checkMove(m, otherside))
+				{
+					validmoves.push_back(m);
+				}
+				else
+					delete m;
+			}
+		} 	
+	}
+	else
+	{
+		v = 3 * 65;
+		for (i = 0; i < 8; i++)
+		{
+			for (int j = 0; j < 8 ; j++)
+			{
+				Move *m = new Move(i, j);
+				if(boardclone->checkMove(m, playerside))
+				{
+					validmoves.push_back(m);
+				}
+				else
+					delete m;
+			}
+		} 	
+	}
+}
+
 // Much of the commented code is for multiple layers of minimax, unimplemented
 int Player::minimax(Move *move)
 {
@@ -213,7 +257,7 @@ int Player::minimax(Move *move)
 	std::vector<Move *> validopponentmoves;
 	std::vector<Move *> ourmoves;
 	ourmoves.push_back(move);
-	ourmoves.push_back(move);
+	ourmoves.push_back(move); //Why twice?
 	int i;
 	int worst = 3*65;
 	for (i = 0; i < 8; i++)
