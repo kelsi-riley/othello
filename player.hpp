@@ -23,6 +23,7 @@ public:
     int minimax(Move *move);
     int heuristic(Board *theboard, std::vector<Move *> moves, Side side);
     void setBoard(Board *boardset);
+	int alphabeta(Board *aboard, Move *move, int depth, int min, int max);
 };
 
 #endif

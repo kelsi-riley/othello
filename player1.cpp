@@ -49,7 +49,7 @@ void Player::setBoard(Board *boardset) {
  */
 
 Move *Player::doMove(Move *opponentsMove, int msLeft) {
-    // executes the opponenets move on our board
+    // executes the opponent's move on our board
     if (opponentsMove != nullptr)
     {
 		board->doMove(opponentsMove, otherside);
@@ -70,7 +70,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 		}
 	}
 	Move *nextmove;
-	int currentminimax = (-65)*3;
+	int currentminimax = (-641);
 	int temp;
 	unsigned int index;
 	// if there is no valid move, the player doesn't move at all. 	
