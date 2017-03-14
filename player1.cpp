@@ -72,6 +72,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 	Move *nextmove;
 	int currentminimax = (-65)*3;
 	int temp;
+	unsigned int index;
 	// if there is no valid move, the player doesn't move at all. 	
 	if (validmoves.size() == 0)
 	{
@@ -89,214 +90,22 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 			{
 				currentminimax = temp;
 				nextmove = validmoves[i];
+				index = i;
 			}
 			delete theboard;
 		}
 	}
 		for (unsigned int i = 0; i < validmoves.size(); i++)
 		{
-			delete validmoves[i];
+			if (index != i)
+			{
+				delete validmoves[i];
+			}
 		}
 	// player makes the move on its board and returns it
 	board -> doMove(nextmove, playerside);
 	return nextmove;
 }
-
-
-//// Much of the commented code is for multiple layers of minimax, unimplemented
-//// This function takes a move that our player is considering and considers
-//// the favorability of the board after some depth of future moves.
-//int Player::minimax(Move *move, int depth)
-//{
-	//Board *boardclone = board -> copy();
-	//boardclone -> doMove(move, playerside);
-	//// builds a vector of all valid moves our opponent can make after
-	//// we make our move "move"
-	//std::vector<Move *> validopponentmoves;
-	//std::vector<Move *> ourmoves;
-	//ourmoves.push_back(move);
-	//int i;
-	//int iterations = 0;
-	
-	//int worst = 3*65;
-	//for (i = 0; i < 8; i++)
-	//{
-		//for (int j = 0; j < 8 ; j++)
-		//{
-			//Move *m = new Move(i, j);
-			//if(boardclone->checkMove(m, otherside))
-			//{
-				//validopponentmoves.push_back(m);
-			//}
-			//else
-			//delete m;
-		//}
-	//} 	
-	//delete boardclone;
-	//// if our opponent has any valid moves, then we find the most unfavorable
-	//// possible outcome
-	//if (validopponentmoves.size() != 0)
-	//{
-		//for (unsigned int i = 0; i < validopponentmoves.size(); i++)
-		//{
-			//ourmoves[1] = validopponentmoves[i];
-			//int temp = heuristic(board, ourmoves, playerside);
-			//if (temp < worst)
-			//{
-				//worst = temp;
-			//}
-		//}
-			////Board *boardcopy = boardclone->copy();
-			////boardcopy->doMove(validopponentmoves[i], otherside);
-			////int ours = boardcopy->count(playerside);
-			////int theirs = boardcopy->count(otherside);
-			////int temp = ours-theirs;
-			////if (temp < worst)
-			////{
-				////worst = temp;
-			////}
-			////std::vector<Move *> validmoves;
-			////for (int k = 0; k < 8; k++)
-			////{
-				////for (int j = 0; j < 8 ; j++)
-				////{
-					////Move *m = new Move(k, j);
-					////if(boardcopy->checkMove(m, playerside))
-					////{
-						////validmoves.push_back(m);
-					////}
-					////else
-					////delete m;
-				////}
-			////}
-			////for (unsigned int k = 0; k <validmoves.size(); k++)
-			////{
-				////Board *boardcopytwo = boardcopy->copy();
-				////boardcopytwo->doMove(validmoves[k], playerside);
-				////int ours = boardcopytwo->count(playerside);
-				////int theirs = boardcopytwo->count(otherside);
-				////int temp = ours-theirs;
-				////if (validmoves[k]->getX() == 0)
-				////{
-					////if (validmoves[k]->getY()==0||validmoves[k]->getY()==7)
-					////{
-						////temp *= 3;
-					////}
-					////else if (validmoves[k]->getY()==1||validmoves[k]->getY()==6)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////else if (validmoves[k]->getX() == 7)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= 3;
-					////}
-					////else if (validmoves[k]->getY()==1 || validmoves[k]->getY()==6)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////else if (validmoves[k]->getX() == 1)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= (-3);
-					////}	
-				////}
-				////else if (validmoves[k]->getX() == 6)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////if (temp < worst)
-				////{
-					////worst = temp;	
-				////}
-				////delete boardcopytwo;
-			////}
-	//}
-	//else
-	//{
-		//std::vector<Move*> ourmove;
-		//ourmove.push_back(move);
-		//int temp = heuristic(board, ourmove, playerside);
-		//return temp;
-		////int ours = boardclone->count(playerside);
-		////int theirs = boardclone->count(otherside);
-		////worst = ours-theirs;
-				////int temp = ours-theirs;
-			////std::vector<Move *> validmoves;
-			////for (int k = 0; k < 8; k++)
-			////{
-				////for (int j = 0; j < 8 ; j++)
-				////{
-					////Move *m = new Move(k, j);
-					////if(boardclone->checkMove(m, playerside))
-					////{
-						////validmoves.push_back(m);
-					////}
-					////else
-					////delete m;
-				////}
-			////}
-			////for (unsigned int k = 0; k <validmoves.size(); k++)
-			////{
-				////Board *boardcopy = board->copy();
-				////boardcopy->doMove(validmoves[k], playerside);
-				////int ours = boardcopy->count(playerside);
-				////int theirs = boardcopy->count(otherside);
-				////int temp = ours-theirs;
-				////if (validmoves[k]->getX() == 0)
-				////{
-					////if (validmoves[k]->getY()==0||validmoves[k]->getY()==7)
-					////{
-						////temp *= 3;
-					////}
-					////else if (validmoves[k]->getY()==1||validmoves[k]->getY()==6)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////else if (validmoves[k]->getX() == 7)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= 3;
-					////}
-					////else if (validmoves[k]->getY()==1 || validmoves[k]->getY()==6)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////else if (validmoves[k]->getX() == 1)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= (-3);
-					////}	
-				////}
-				////else if (validmoves[k]->getX() == 6)
-				////{
-					////if (validmoves[k]->getY()==0 || validmoves[k]->getY()==7)
-					////{
-						////temp *= (-3);
-					////}
-				////}
-				////if (temp < worst)
-				////{
-					////worst = temp;	
-				////}
-				////delete boardcopy;
-			////}
-	//}
-////	delete boardclone;
-	//return worst;	
-//}
-
 
 // Weights possible moves based on board position
 // This function takes a vector of steps leading to a specific position/
@@ -309,11 +118,10 @@ int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 	bool edge = false;
 	bool adjacenttocorner = false;
 	
-	
+	// this works because moves will only contain one move-> we should change
+	// this stylistically but for now it fine.
 	for (unsigned int i = 0; i < moves.size(); i++)
 	{
-		//if (i%2 == 0)
-		//{
 			theboardcopy->doMove(moves[i], side);
 			if (side == playerside)
 			{
@@ -370,55 +178,7 @@ int Player::heuristic(Board *theboard, std::vector<Move*> moves, Side side)
 					edge = true;
 				}
 			}
-		//}
-		//else
-		//{
-			//if (side == playerside)
-			//{
-				//theboardcopy->doMove(moves[i], otherside);
-			//}
-			//else
-			//{
-				//theboardcopy->doMove(moves[i], playerside);
-				//if (moves[i]->getX() == 0)
-				//{
-					//if (moves[i]->getY()==0||moves[i]->getY()==7)
-					//{
-						//corner = true;
-					//}
-					//else if (moves[i]->getY()==1||moves[i]->getY()==6)
-					//{
-						//adjacenttocorner = true;
-					//}
-				//}
-				//else if (moves[i]->getX() == 7)
-				//{
-					//if (moves[i]->getY()==0 || moves[i]->getY()==7)
-					//{
-						//corner = true;
-					//}
-					//else if (moves[i]->getY()==1 || moves[i]->getY()==6)
-					//{
-						//adjacenttocorner = true;
-					//}	
-				//}
-				//else if (moves[i]->getX() == 1)
-				//{
-					//if (moves[i]->getY()==0 || moves[i]->getY()==7)
-					//{
-						//adjacenttocorner = true;
-					//}
-				//}	
-				//else if (moves[i]->getX() == 6)
-				//{
-					//if (moves[i]->getY()==0 || moves[i]->getY()==7)
-					//{
-						//adjacenttocorner = true;
-					//}
-				//}
-			//}
-		//}
-	}
+		}
 	int temp = theboardcopy->count(playerside) - theboardcopy->count(otherside);
 	delete theboardcopy;
 	if (corner)
@@ -446,15 +206,16 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 	{
 		std::vector<Move *> ourmove;
 		ourmove.push_back(move);
-		theboard->doMove(move, playerside);
-		return heuristic(theboard, ourmove, playerside);
+		//theboard->doMove(move, playerside
+		int temp = heuristic(theboard, ourmove, playerside);
+		return temp;
 	}
 	
 	std::vector<Move *> validnextmoves;
-	
 	// minimizing node:
 	if (depth%2 == 0)
 	{	
+		theboard-> doMove(move, playerside);
 		int v = max;
 		for (int i = 0; i < 8; i++)
 		{
@@ -466,14 +227,18 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 					validnextmoves.push_back(m);
 				}
 				else
-				delete m;
+				{
+					delete m;
+				}
 			}
 		} 	
 		for (unsigned int i = 0; i<validnextmoves.size(); i++)
 		{
 			int temp = alphabeta(aboard, validnextmoves[i], depth-1, min, v);
 			if (temp < v)
+			{
 				v = temp;
+			}
 			if (v < min)
 			{
 				for (unsigned int k = 0; k<validnextmoves.size(); k++)
@@ -490,9 +255,10 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 		}
 		return v;
 	}
-	
+	//maximizing node
 	else
 	{
+		theboard->doMove(move, otherside);
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 8 ; j++)
@@ -533,46 +299,57 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 
 
 
-	//int v = 0;
-	//Board *theboard = board->copy();
-	//std::vector<Move *> ourmove;
-	//ourmove.push_back(move);
-	//std::vector<Move *> validmoves;
-	//if (depth == 0)
-
-		//return heuristic(theboard, ourmove, s);
-	//if (side == playerside)
-	//{
-		//v = -3 * 65;
-		//for (i = 0; i < 8; i++)
-		//{
-			//for (int j = 0; j < 8 ; j++)
-			//{
-				//Move *m = new Move(i, j);
-				//if(boardclone->checkMove(m, otherside))
-				//{
-					//validmoves.push_back(m);
-				//}
-				//else
-					//delete m;
-			//}
-		//} 	
-	//}
-	//else
-	//{
-		//v = 3 * 65;
-		//for (i = 0; i < 8; i++)
-		//{
-			//for (int j = 0; j < 8 ; j++)
-			//{
-				//Move *m = new Move(i, j);
-				//if(boardclone->checkMove(m, playerside))
-				//{
-					//validmoves.push_back(m);
-				//}
-				//else
-					//delete m;
-			//}
-		//} 	
-	//}
-//}
+//// Much of the commented code is for multiple layers of minimax, unimplemented
+//// This function takes a move that our player is considering and considers
+//// the favorability of the board after some depth of future moves.
+int Player::minimax(Move *move)
+{
+	Board *boardclone = board -> copy();
+	boardclone -> doMove(move, playerside);
+	// builds a vector of all valid moves our opponent can make after
+	// we make our move "move"
+	std::vector<Move *> validopponentmoves;
+	std::vector<Move *> ourmoves;
+	ourmoves.push_back(move);
+	int i;
+	int iterations = 0;
+	
+	int worst = 3*65;
+	for (i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8 ; j++)
+		{
+			Move *m = new Move(i, j);
+			if(boardclone->checkMove(m, otherside))
+			{
+				validopponentmoves.push_back(m);
+			}
+			else
+			delete m;
+		}
+	} 	
+	delete boardclone;
+	// if our opponent has any valid moves, then we find the most unfavorable
+	// possible outcome
+	if (validopponentmoves.size() != 0)
+	{
+		for (unsigned int i = 0; i < validopponentmoves.size(); i++)
+		{
+			ourmoves[1] = validopponentmoves[i];
+			int temp = heuristic(board, ourmoves, playerside);
+			if (temp < worst)
+			{
+				worst = temp;
+			}
+		}
+	}
+	else
+	{
+		std::vector<Move*> ourmove;
+		ourmove.push_back(move);
+		int temp = heuristic(board, ourmove, playerside);
+		return temp;
+	}
+//	delete boardclone;
+	return worst;	
+}
