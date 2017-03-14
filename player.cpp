@@ -1,6 +1,8 @@
 #include "player.hpp"
 #include <vector>
 
+#define MINIMUMHEURISTIC (-1*150*12)*65
+#define MAXIMUMHEURISTIC 65*4*150*16*10
 /*
  * Constructor for the player; initialize everything here. The side your AI is
  * on (BLACK or WHITE) is passed in as "side". The constructor must finish
@@ -53,10 +55,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
     if (opponentsMove != nullptr)
     {
 		board->doMove(opponentsMove, otherside);
-		std::cerr<< "w: " << opponentsMove -> getX() << "," << opponentsMove->getY() << std::endl;
 	}
-	else 
-		std::cerr<<"W did not move"<< std::endl;
 	// fills a vector with all valid moves our player can now make
 	std::vector<Move *> validmoves;
 	for (int i = 0; i < 8; i++)
@@ -66,7 +65,6 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 			Move *m = new Move(i, j);
 			if( board->checkMove(m, playerside))
 			{
-				std::cerr << "valid: "<< m->getX() << "," << m->getY() << std::endl;
 				validmoves.push_back(m);
 			}
 			else
@@ -74,7 +72,7 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 		}
 	}
 	Move *nextmove = nullptr;
-	int currentminimax = (-50*12)*65;
+	int currentminimax = MINIMUMHEURISTIC;
 	int temp;
 	unsigned int index = 0;
 	// if there is no valid move, the player doesn't move at all. 	
@@ -91,12 +89,9 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 	// the greatest gauranteed heuristic value for our player
 	else
 	{
-		std::cerr<<"size = "<<validmoves.size()<<std::endl;
 		for (unsigned int i = 0; i < validmoves.size(); i++)
 		{
-			std::cerr<<"i = " << i << std::endl;
-			temp = alphabeta(board, validmoves[i], 2, (-50*12)*65, 65*400);
-			//std::cerr << temp << std::endl;
+			temp = alphabeta(board, validmoves[i], 4, MINIMUMHEURISTIC, MAXIMUMHEURISTIC);
 			if (temp >= currentminimax)
 			{
 				currentminimax = temp;
@@ -105,24 +100,21 @@ Move *Player::doMove(Move *opponentsMove, int msLeft) {
 			}
 		}
 	}
-	std::cerr<<"i = " << index << " deleting"<<std::endl;
 		for (unsigned int i = 0; i < validmoves.size(); i++)
 		{
-			std::cerr<<validmoves.size()<<" " << i << std::endl;
 			if (index != i)
 			{
-				std::cerr<<"rip"<<std::endl;
 				delete validmoves[i];
 			}
 		}
 	// player makes the move on its board and returns it
-	std::cerr<< "b: " << nextmove -> getX() << "," << nextmove->getY() << std::endl;
 	board -> doMove(nextmove, playerside);
 	return nextmove;
 }
 
 // Weights possible moves based on board position
-// This function takes a vector of steps leading to a specific position/
+// This function takes a move, a copy of the board, and a Side side,
+// and makes the move on the board copy, leading to a specific position/
 // configuration of the board and returns an integer representing the
 // favorability of configuration for our player.
 int Player::heuristic(Board *theboard, Move* move, Side side)
@@ -131,21 +123,30 @@ int Player::heuristic(Board *theboard, Move* move, Side side)
 	bool corner = false;
 	int cornercount = 0;
 	bool edge = false;
+	int countedge = 0;
 	bool adjacenttocorner = false;
 	int adjacenttocornercount=0;
 	
-	// this works because moves will only contain one move-> we should change
-	// this stylistically but for now it fine.
 	if (move != nullptr)
 	{
 		theboardcopy->doMove(move, side);
+	}
+	int ours = theboardcopy->count(playerside);
+	int theirs = theboardcopy->count(otherside);
+	if (theboardcopy->isDone() && (ours >= theirs))
+	{
+		return MAXIMUMHEURISTIC;
+	}
+	if (theboardcopy->isDone() && (theirs > ours))
+	{
+		return MINIMUMHEURISTIC;
 	}
 	if (theboardcopy->get(playerside, 0, 0))
 	{
 		corner = true;
 		cornercount++;
 	}
-	else
+	else if (!(theboardcopy->occupied(0, 0)))
 	{
 		if (theboardcopy->get(playerside, 0, 1))
 		{
@@ -168,7 +169,7 @@ int Player::heuristic(Board *theboard, Move* move, Side side)
 		corner = true;
 		cornercount++;
 	}
-	else
+	else if (!(theboardcopy->occupied(0, 7)))
 	{
 		if (theboardcopy->get(playerside, 7, 6))
 		{
@@ -191,7 +192,7 @@ int Player::heuristic(Board *theboard, Move* move, Side side)
 		corner = true;
 		cornercount++;
 	}
-	else
+	else if (!(theboardcopy->occupied(7, 0)))
 	{
 		if (theboardcopy->get(playerside, 6, 0))
 		{
@@ -214,7 +215,7 @@ int Player::heuristic(Board *theboard, Move* move, Side side)
 		corner = true;
 		cornercount++;
 	}
-	else
+	else if (!(theboardcopy->occupied(7, 7)))
 	{
 		if (theboardcopy->get(playerside, 0, 6))
 		{
@@ -232,95 +233,110 @@ int Player::heuristic(Board *theboard, Move* move, Side side)
 			adjacenttocornercount++;
 		}
 	}	
-				
-			//if (side == playerside)
-			//{
-				//if (move->getX() == 0)
-				//{
-					//if (move->getY()==0||move->getY()==7)
-					//{
-						//corner = true;
-					//}
-					//else if (move->getY()==1||move->getY()==6)
-					//{
-						//adjacenttocorner = true;
-					//}
-					//else
-					//{
-						//edge = true;
-					//}
-				//}
-				//else if (move->getX() == 7)
-				//{
-					//if (move->getY()==0 || move->getY()==7)
-					//{
-						//corner = true;
-					//}
-					//else if (move->getY()==1 || move->getY()==6)
-					//{
-						//adjacenttocorner = true;
-					//}	
-					//else
-					//{
-						//edge = true;
-					//}
-				//}
-				//else if (move->getX() == 1)
-				//{
-					//if (move->getY()==0 || move->getY()==7)
-					//{
-						//adjacenttocorner = true;
-					//}
-				//}	
-				//else if (move->getX() == 6)
-				//{
-					//if (move->getY()==0 || move->getY()==7)
-					//{
-						//adjacenttocorner = true;
-					//}
-				//}
-				//else if (move->getY() == 0)
-				//{
-					//edge = true;
-				//}
-				//else if (move->getY() == 7)
-				//{
-					//edge = true;
-				//}
-			//}
-		//}
-	int temp = 64 + theboardcopy->count(playerside) - theboardcopy->count(otherside);
+	if(theboardcopy->get(playerside, 0, 2))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 0, 3))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 0, 4))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 0, 5))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 7, 2))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 7, 3))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 7, 4))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 7, 5))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 2, 0))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 3, 0))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 4, 0))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 5, 0))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 2, 7))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 3, 7))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 4, 7))
+	{
+		edge = true;
+		countedge++;
+	}
+	if(theboardcopy->get(playerside, 5, 7))
+	{
+		edge = true;
+		countedge++;
+	}
 	delete theboardcopy;
 	if (corner)
 	{
-		temp *= 100*cornercount;
+		ours *= 150*cornercount;
 	}
-	else if (adjacenttocorner)
+	if (adjacenttocorner)
 	{
-		temp *= (-50)*adjacenttocornercount;
+		theirs *= (150)*adjacenttocornercount;
 	}
-	else if (edge)
+	if (edge)
 	{
-		temp *= (5);
+		ours *= (10)*countedge;
 	}
-	//std::cerr<<temp<<std::endl;
+	int temp = ours - theirs;
 	return temp;
 }	
 
 
-//I started writing the skeleton code of this function, it doesn't work yet
+
 int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 {
 	Board *theboard = aboard->copy();
 	if (depth == 0)
 	{
-		//if (move != nullptr)
-		//{
-			//theboard -> doMove(move, playerside);
-		//}
-		//int score = theboard -> count(playerside) - theboard -> count(otherside);
-		//std::cerr<<"score: " <<score<<std::endl;
-		//theboard->doMove(move, playerside);
 		int temp = heuristic(theboard, move, playerside);
 		delete theboard;
 		return temp;
@@ -365,7 +381,6 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 		}
 		for (unsigned int i = 0; i<validnextmoves.size(); i++)
 		{
-			std::cerr<<"testing w "<< validnextmoves[i] -> getX()<< "," << validnextmoves[i] -> getY() << std::endl;
 			int temp = alphabeta(theboard, validnextmoves[i], depth-1, min, v);
 			if (temp < v)
 			{
@@ -396,26 +411,20 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 		if (move != nullptr)
 		{
 			theboard->doMove(move, otherside);
-			std::cerr << move->getX() << move->getY() << ": ";
 		}
 		for (int i = 0; i < 8; i++)
 		{
 			for (int j = 0; j < 8 ; j++)
 			{
-				std::cerr << i << j;
 				Move *m = new Move(i, j);
 				if(theboard->checkMove(m, playerside))
 				{
 					validnextmoves.push_back(m);
-					std::cerr << "X ";
 				}
 				else
 					delete m;
-					std::cerr << "  ";
 			}
-			std::cerr << "| ";
 		}
-		std::cerr << std::endl;
 		int v = min;
 		if (validnextmoves.size() == 0)
 		{
@@ -426,13 +435,11 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 			if (v > max)
 			{
 				delete theboard;
-				std::cerr<<"b: " << max << endl;
 				return max;
 			}
 		}
 		for (unsigned int i = 0; i < validnextmoves.size(); i++)
 		{
-			std::cerr<<"       testing b "<< validnextmoves[i] -> getX()<< "," << validnextmoves[i] -> getY() << std::endl;
 			int temp = alphabeta(theboard, validnextmoves[i],  depth-1, v, max);
 			if (temp > v)
 				v = temp;
@@ -443,7 +450,6 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 				{
 					delete validnextmoves[k];
 				}
-				std::cerr<<"b: " << max << endl;
 				return max;
 			}
 		}
@@ -458,59 +464,3 @@ int Player::alphabeta(Board *aboard, Move *move, int depth, int min, int max)
 
 }
 
-
-
-//// Much of the commented code is for multiple layers of minimax, unimplemented
-//// This function takes a move that our player is considering and considers
-//// the favorability of the board after some depth of future moves.
-//int Player::minimax(Move *move)
-//{
-	//Board *boardclone = board -> copy();
-	//boardclone -> doMove(move, playerside);
-	//// builds a vector of all valid moves our opponent can make after
-	//// we make our move "move"
-	//std::vector<Move *> validopponentmoves;
-	//std::vector<Move *> ourmoves;
-	//ourmoves.push_back(move);
-	//int i;
-	//int iterations = 0;
-	
-	//int worst = 3*65;
-	//for (i = 0; i < 8; i++)
-	//{
-		//for (int j = 0; j < 8 ; j++)
-		//{
-			//Move *m = new Move(i, j);
-			//if(boardclone->checkMove(m, otherside))
-			//{
-				//validopponentmoves.push_back(m);
-			//}
-			//else
-			//delete m;
-		//}
-	//} 	
-	//delete boardclone;
-	//// if our opponent has any valid moves, then we find the most unfavorable
-	//// possible outcome
-	//if (validopponentmoves.size() != 0)
-	//{
-		//for (unsigned int i = 0; i < validopponentmoves.size(); i++)
-		//{
-			//ourmoves[1] = validopponentmoves[i];
-			//int temp = heuristic(board, ourmoves, playerside);
-			//if (temp < worst)
-			//{
-				//worst = temp;
-			//}
-		//}
-	//}
-	//else
-	//{
-		//std::vector<Move*> ourmove;
-		//ourmove.push_back(move);
-		//int temp = heuristic(board, ourmove, playerside);
-		//return temp;
-	//}
-////	delete boardclone;
-	//return worst;	
-//}
