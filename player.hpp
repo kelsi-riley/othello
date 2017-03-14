@@ -20,8 +20,8 @@ public:
 
     // Flag to tell if the player is running within the test_minimax context
     bool testingMinimax;
-    int minimax(Move *move);
-    int heuristic(Board *theboard, std::vector<Move *> moves, Side side);
+    //int minimax(Move *move);
+    int heuristic(Board *theboard, Move * move, Side side);
     void setBoard(Board *boardset);
 	int alphabeta(Board *aboard, Move *move, int depth, int min, int max);
 };
